@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}AuraGlow | Shopping Cart{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="display-font mb-4 text-light"><i class="fa-solid fa-cart-shopping me-2 text-gradient"></i>Your Shopping Cart</h1>
+
+    {% if cart %}
+        <div class="row g-4 animate-fade-in">
+            <!-- Cart Items List -->
+            <div class="col-lg-8">
+                <div class="glass-card p-4 table-responsive">
+                    <table class="table table-dark table-borderless align-middle mb-0">
+                        <thead>
+                            <tr class="text-secondary border-bottom border-secondary border-opacity-10">
+                                <th scope="col" class="pb-3">Product</th>
+                                <th scope="col" class="pb-3 text-center" style="width: 130px;">Quantity</th>
+                                <th scope="col" class="pb-3 text-end">Price</th>
+                                <th scope="col" class="pb-3 text-end">Subtotal</th>
+                                <th scope="col" class="pb-3 text-center" style="width: 70px;">Remove</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in cart %}
+                                {% with product=item.product %}
+                                    <tr class="border-bottom border-secondary border-opacity-10">
+                                        <!-- Product Image + Name -->
+                                        <td class="py-3">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <div class="rounded bg-black border border-secondary border-opacity-20 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; overflow: hidden;">
+                                                    {% if product.image %}
+                                                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid" style="max-height: 100%; object-fit: contain;">
+                                                    {% else %}
+                                                        <i class="fa-solid fa-laptop-code text-gradient fs-5"></i>
+                                                    {% endif %}
+                                                </div>
+                                                <div>
+                                                    <a href="{% url 'store:product_detail' product.slug %}" class="text-decoration-none text-light fw-medium d-block">{{ product.name }}</a>
+                                                    <span class="text-secondary small">{{ product.category.name }}</span>
+                                                    <span class="d-block text-muted small mt-1">In Stock: {{ product.stock }}</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        
+                                        <!-- Quantity Update Form -->
+                                        <td class="py-3 text-center">
+                                            <form action="{% url 'store:cart_update' product.id %}" method="post" class="d-flex align-items-center justify-content-center">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="override" value="True">
+                                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ product.stock }}" class="form-control form-control-sm text-center bg-dark border-secondary text-light px-1" style="width: 55px;" id="quantity-input-{{ product.id }}">
+                                                <button type="submit" class="btn btn-sm btn-outline-glass ms-2 p-1" title="Update Quantity" id="update-btn-{{ product.id }}">
+                                                    <i class="fa-solid fa-rotate"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                        
+                                        <!-- Unit Price -->
+                                        <td class="py-3 text-end text-light font-monospace">${{ item.price }}</td>
+                                        
+                                        <!-- Item Subtotal -->
+                                        <td class="py-3 text-end text-gradient fw-bold font-monospace">${{ item.total_price }}</td>
+                                        
+                                        <!-- Remove Item Form -->
+                                        <td class="py-3 text-center">
+                                            <form action="{% url 'store:cart_remove' product.id %}" method="post">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm btn-outline-danger border-0 bg-transparent text-danger p-2" title="Remove Item" id="remove-btn-{{ product.id }}">
+                                                    <i class="fa-solid fa-trash-can"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endwith %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Cart Summary side box -->
+            <div class="col-lg-4">
+                <div class="glass-card p-4">
+                    <h4 class="display-font mb-4 text-light">Order Summary</h4>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-secondary">Total Quantity</span>
+                        <span class="text-light fw-medium">{{ cart|length }} items</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 pb-3 border-bottom border-secondary border-opacity-10">
+                        <span class="text-secondary">Shipping</span>
+                        <span class="text-success small fw-medium">Calculated next step</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="text-secondary fs-5">Estimated Total</span>
+                        <span class="text-gradient display-font fs-3 fw-bold">${{ cart.get_total_price }}</span>
+                    </div>
+
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'store:checkout' %}" class="btn btn-gradient w-100 py-3 d-flex align-items-center justify-content-center gap-2" id="checkout-btn">
+                            Proceed to Checkout <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'store:login' %}?next={% url 'store:checkout' %}" class="btn btn-gradient w-100 py-3 d-flex align-items-center justify-content-center gap-2" id="login-checkout-btn">
+                            Login to Checkout <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    {% endif %}
+                    
+                    <a href="{% url 'store:home' %}" class="btn btn-outline-glass w-100 mt-2 py-2 text-center" id="continue-shopping-btn">
+                        Continue Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <!-- Empty Cart State -->
+        <div class="row justify-content-center py-5">
+            <div class="col-md-6 text-center animate-fade-in">
+                <div class="glass-card p-5">
+                    <div class="mb-4">
+                        <i class="fa-solid fa-cart-flatbed-suitcase fs-1 text-gradient"></i>
+                    </div>
+                    <h3 class="display-font mb-3 text-light">Your Cart is Empty</h3>
+                    <p class="text-secondary mb-4">It looks like you haven't added any products to your cart yet. Head back to the store to find premium tech deals.</p>
+                    <a href="{% url 'store:home' %}" class="btn btn-gradient px-4 py-3" id="empty-home-btn">
+                        Browse Products
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

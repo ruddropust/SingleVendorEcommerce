@@ -1,0 +1,234 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AuraGlow E-Commerce{% endblock %}</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand display-font fs-3 text-gradient d-flex align-items-center" href="{% url 'store:home' %}" id="nav-logo">
+                <i class="fa-solid fa-bolt me-2 text-primary"></i>AuraGlow
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'store:home' %}" id="nav-home">Home</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'order_history' %}active{% endif %}" href="{% url 'store:order_history' %}" id="nav-orders">My Orders</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                
+                <!-- Right Nav Section (Cart + Auth) -->
+                <div class="d-flex align-items-center gap-3">
+                    <a href="{% url 'store:cart_detail' %}" class="btn btn-outline-glass position-relative px-3 py-2 d-flex align-items-center gap-2" id="nav-cart">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span class="d-none d-md-inline">Cart</span>
+                        {% if cart|length > 0 %}
+                        <span class="badge-count">{{ cart|length }}</span>
+                        {% endif %}
+                    </a>
+                    
+                    {% if user.is_authenticated %}
+                        <div class="dropdown">
+                            <button class="btn btn-outline-glass dropdown-toggle d-flex align-items-center gap-2" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-regular fa-user"></i> {{ user.username }}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end glass-card p-2 border-0 mt-2 bg-dark" aria-labelledby="userDropdown">
+                                <li>
+                                    <a class="dropdown-item text-light py-2 rounded" href="{% url 'store:order_history' %}" id="dropdown-orders">
+                                        <i class="fa-solid fa-receipt me-2 text-muted"></i>Order History
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider bg-secondary"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger py-2 rounded" href="{% url 'store:logout' %}" id="dropdown-logout">
+                                        <i class="fa-solid fa-right-from-bracket me-2"></i>Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'store:login' %}" class="btn btn-outline-glass" id="nav-login">Login</a>
+                        <a href="{% url 'store:register' %}" class="btn btn-gradient" id="nav-register">Sign Up</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Notification Toast Messages -->
+    <div class="container mt-4">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-dismissible fade show d-flex align-items-center gap-2 animate-fade-in {% if message.tags == 'error' %}border-danger{% elif message.tags == 'success' %}border-success{% endif %}" role="alert">
+                    {% if message.tags == 'error' %}
+                        <i class="fa-solid fa-circle-exclamation text-danger fs-5"></i>
+                    {% elif message.tags == 'success' %}
+                        <i class="fa-solid fa-circle-check text-success fs-5"></i>
+                    {% else %}
+                        <i class="fa-solid fa-circle-info text-info fs-5"></i>
+                    {% endif %}
+                    <div>{{ message }}</div>
+                    <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- Main Content Block -->
+    <main class="flex-grow-1 my-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center text-md-start text-secondary py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                    <span class="display-font fs-4 text-gradient"><i class="fa-solid fa-bolt me-2"></i>AuraGlow</span>
+                    <p class="small mt-2 text-muted mb-0">Premium gadgets and high-end tech curated for modern lifestyles. Built with Django and Stripe.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <p class="small mb-0">&copy; 2026 AuraGlow Inc. All rights reserved.</p>
+                    <div class="mt-2 d-flex justify-content-center justify-content-md-end gap-3 text-muted">
+                        <a href="#" class="text-secondary text-decoration-none"><i class="fa-brands fa-github"></i></a>
+                        <a href="#" class="text-secondary text-decoration-none"><i class="fa-brands fa-twitter"></i></a>
+                        <a href="#" class="text-secondary text-decoration-none"><i class="fa-brands fa-stripe"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AJAX Cart Add script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toast Notification Helper
+            window.showToast = function(message, type) {
+                let container = document.getElementById('toast-container');
+                if (!container) {
+                    container = document.createElement('div');
+                    container.id = 'toast-container';
+                    container.style.position = 'fixed';
+                    container.style.top = '90px'; // Clear navbar
+                    container.style.right = '20px';
+                    container.style.zIndex = '9999';
+                    container.style.display = 'flex';
+                    container.style.flexDirection = 'column';
+                    container.style.gap = '10px';
+                    container.style.pointerEvents = 'none'; // Click through container
+                    document.body.appendChild(container);
+                }
+                
+                const toast = document.createElement('div');
+                toast.className = `alert alert-dismissible fade show d-flex align-items-center gap-2 animate-fade-in ${type === 'success' ? 'border-success' : 'border-danger'}`;
+                toast.style.background = 'rgba(17, 24, 39, 0.95)';
+                toast.style.color = '#f3f4f6';
+                toast.style.border = '1px solid var(--border-color)';
+                toast.style.borderRadius = '12px';
+                toast.style.backdropFilter = 'blur(10px)';
+                toast.style.padding = '12px 20px';
+                toast.style.minWidth = '280px';
+                toast.style.pointerEvents = 'auto'; // Allow interaction with toast
+                toast.style.boxShadow = '0 10px 25px rgba(0,0,0,0.5)';
+                
+                const icon = document.createElement('i');
+                icon.className = type === 'success' ? 'fa-solid fa-circle-check text-success fs-5' : 'fa-solid fa-circle-exclamation text-danger fs-5';
+                
+                const text = document.createElement('div');
+                text.textContent = message;
+                text.style.fontSize = '0.9rem';
+                text.style.fontWeight = '500';
+                
+                const closeBtn = document.createElement('button');
+                closeBtn.type = 'button';
+                closeBtn.className = 'btn-close btn-close-white ms-auto';
+                closeBtn.setAttribute('data-bs-dismiss', 'alert');
+                closeBtn.style.padding = '0.5rem';
+                
+                toast.appendChild(icon);
+                toast.appendChild(text);
+                toast.appendChild(closeBtn);
+                container.appendChild(toast);
+                
+                // Auto dismiss toast after 3 seconds
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            };
+
+            // Intercept all cart-add forms via event delegation
+            document.body.addEventListener('submit', function(e) {
+                const form = e.target;
+                if (form.tagName === 'FORM' && form.action.includes('/cart/add/')) {
+                    e.preventDefault();
+                    
+                    const url = form.action;
+                    const formData = new FormData(form);
+                    
+                    fetch(url, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            // Update badge count
+                            const cartButton = document.querySelector('#nav-cart');
+                            if (cartButton) {
+                                let badge = cartButton.querySelector('.badge-count');
+                                if (!badge) {
+                                    badge = document.createElement('span');
+                                    badge.className = 'badge-count';
+                                    cartButton.appendChild(badge);
+                                }
+                                badge.textContent = data.cart_count;
+                                // Add slight bounce animation to cart button
+                                cartButton.classList.add('animate-bounce');
+                                setTimeout(() => cartButton.classList.remove('animate-bounce'), 400);
+                            }
+                            showToast(data.message, 'success');
+                        } else {
+                            showToast(data.message, 'error');
+                        }
+                    })
+                    .catch(err => {
+                        console.error('AJAX Error:', err);
+                        showToast('Failed to add product. Please try again.', 'error');
+                    });
+                }
+            });
+        });
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

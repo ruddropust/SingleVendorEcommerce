@@ -1,0 +1,25 @@
+# Django / Python Git Ignore
+*.py[cod]
+*$py.class
+__pycache__/
+
+# Environments
+.env*
+!.env.example
+.env/
+venv/
+ENV/
+
+# Database
+db.sqlite3
+
+# Media and Static files
+/media/*
+!/media/products/
+staticfiles/
+
+# Cache, CLI, and IDEs
+.pytest_cache/
+.vscode/
+.idea/
+

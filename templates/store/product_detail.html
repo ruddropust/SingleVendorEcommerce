@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}AuraGlow | {{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Back to Catalog Link -->
+    <div class="mb-4">
+        <a href="{% url 'store:home' %}" class="btn btn-outline-glass text-secondary px-3 py-2 text-decoration-none">
+            <i class="fa-solid fa-arrow-left me-2"></i>Back to Catalog
+        </a>
+    </div>
+
+    <!-- Product Showcase -->
+    <div class="row g-5">
+        <!-- Product Image Frame -->
+        <div class="col-lg-6 animate-fade-in">
+            <div class="detail-img-frame">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded-3" style="max-height: 450px; object-fit: contain;">
+                {% else %}
+                    <div class="text-center text-secondary py-5">
+                        <i class="fa-solid fa-laptop-code fs-1 text-gradient mb-3"></i>
+                        <p class="lead mb-0 text-muted">No Image Available</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Product Specs and Cart Trigger -->
+        <div class="col-lg-6 d-flex flex-column justify-content-center animate-fade-in">
+            <span class="text-gradient fs-6 fw-bold text-uppercase mb-2">{{ product.category.name }}</span>
+            <h1 class="display-4 display-font mb-3 text-light">{{ product.name }}</h1>
+            
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <span class="fs-2 fw-bold text-gradient display-font">${{ product.price }}</span>
+                {% if product.is_in_stock %}
+                    <span class="stock-badge-instock">
+                        <i class="fa-solid fa-check-circle me-1"></i> In Stock ({{ product.stock }} units left)
+                    </span>
+                {% else %}
+                    <span class="stock-badge-outofstock">
+                        <i class="fa-solid fa-times-circle me-1"></i> Out of Stock
+                    </span>
+                {% endif %}
+            </div>
+
+            <!-- Description -->
+            <div class="mb-4">
+                <h5 class="text-light display-font mb-2">Description</h5>
+                <p class="text-secondary lead fs-6" style="line-height: 1.7;">
+                    {% if product.description %}
+                        {{ product.description|linebreaksbr }}
+                    {% else %}
+                        No description has been provided for this product yet. Rest assured, AuraGlow guarantees first-class build quality and premium standards across all our tech products.
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- Purchase Box -->
+            <div class="glass-card p-4 mt-2">
+                {% if product.is_in_stock %}
+                    <form action="{% url 'store:cart_add' product.id %}" method="post">
+                        {% csrf_token %}
+                        <div class="row align-items-center g-3">
+                            <!-- Quantity Selection -->
+                            <div class="col-sm-4">
+                                <label for="quantity" class="form-label text-secondary small">Quantity</label>
+                                <select name="quantity" id="quantity" class="form-select bg-dark border-secondary text-light">
+                                    {% with ''|center:product.stock as range %}
+                                    {% for _ in range %}
+                                        <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+                                    {% endfor %}
+                                    {% endwith %}
+                                </select>
+                            </div>
+                            
+                            <!-- Add to Cart Action -->
+                            <div class="col-sm-8 pt-sm-4">
+                                <button type="submit" class="btn btn-gradient w-100 py-3 d-flex align-items-center justify-content-center gap-2" id="add-to-cart-detail">
+                                    <i class="fa-solid fa-cart-shopping"></i> Add to Shopping Cart
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                {% else %}
+                    <div class="text-center py-2">
+                        <p class="text-danger mb-3 fw-medium">We apologize! This item is currently out of stock.</p>
+                        <button class="btn btn-outline-glass w-100 py-3 text-muted cursor-not-allowed" disabled id="add-to-cart-detail-disabled">
+                            <i class="fa-solid fa-bell-slash me-2"></i>Out of Stock
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

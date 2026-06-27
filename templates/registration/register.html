@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}AuraGlow | Register{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 animate-fade-in">
+            <div class="glass-card p-4 p-sm-5">
+                <div class="text-center mb-4">
+                    <i class="fa-solid fa-bolt fs-1 text-gradient mb-2"></i>
+                    <h2 class="display-font text-light">Create Account</h2>
+                    <p class="text-secondary small">Register to checkout and manage your tech orders.</p>
+                </div>
+
+                <form method="post" action="{% url 'store:register' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}" id="register-form">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger bg-danger bg-opacity-10 border-0 text-danger p-3 small mb-4" role="alert">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% for field in form %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label text-secondary small">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                                <div class="form-text text-muted small" style="font-size: 0.75rem; line-height: 1.3;">
+                                    {{ field.help_text|safe }}
+                                </div>
+                            {% endif %}
+                            {% if field.errors %}
+                                <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+
+                    <button type="submit" class="btn btn-gradient w-100 py-3 mb-3 mt-4" id="submit-register">
+                        Create Account
+                    </button>
+                    
+                    <div class="text-center">
+                        <span class="text-secondary small">Already have an account? </span>
+                        <a href="{% url 'store:login' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}" class="small text-gradient fw-medium text-decoration-none" id="signin-link">Sign in instead</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

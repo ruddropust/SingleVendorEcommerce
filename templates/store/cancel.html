@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}AuraGlow | Payment Cancelled{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 text-center animate-fade-in">
+            <!-- Cancel Card -->
+            <div class="glass-card p-5">
+                <div class="mb-4">
+                    <i class="fa-solid fa-circle-xmark fs-1 text-danger animate-pulse" style="font-size: 5rem !important;"></i>
+                </div>
+                <h1 class="display-4 display-font text-gradient mb-3">Payment Cancelled</h1>
+                <p class="lead text-secondary mb-4">Your Stripe transaction was cancelled, aborted, or could not be completed. No funds were captured, and no inventory has been changed.</p>
+
+                <div class="alert alert-warning bg-warning bg-opacity-10 border-0 p-3 text-start mb-4">
+                    <div class="d-flex gap-2">
+                        <i class="fa-solid fa-triangle-exclamation text-gradient fs-5 mt-0.5"></i>
+                        <div>
+                            <strong class="text-light d-block mb-1">Why did this happen?</strong>
+                            <ul class="small text-secondary mb-0 ps-3">
+                                <li>The checkout browser tab was closed before finishing the Stripe session.</li>
+                                <li>The payment gateway timed out or rejected the card credentials.</li>
+                                <li>The transaction was manually cancelled at the Stripe screen.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{% url 'store:cart_detail' %}" class="btn btn-gradient px-4 py-2.5">
+                        <i class="fa-solid fa-cart-shopping me-2"></i>Return to Cart
+                    </a>
+                    <a href="{% url 'store:home' %}" class="btn btn-outline-glass px-4 py-2.5">
+                        <i class="fa-solid fa-house me-2"></i>Back to Catalog
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

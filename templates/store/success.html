@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}AuraGlow | Payment Success{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center animate-fade-in">
+            <!-- Success Card -->
+            <div class="glass-card p-5">
+                <div class="mb-4">
+                    <i class="fa-solid fa-circle-check fs-1 text-success animate-bounce" style="font-size: 5rem !important;"></i>
+                </div>
+                <h1 class="display-4 display-font text-gradient mb-3">Order Confirmed!</h1>
+                <p class="lead text-secondary mb-4">Thank you for your order. Your payment has been processed successfully, and we have updated our inventory.</p>
+
+                <!-- Order Detail Summary -->
+                <div class="text-start bg-dark bg-opacity-50 border border-secondary border-opacity-10 rounded-3 p-4 mb-4">
+                    <h5 class="text-light display-font mb-3 pb-2 border-bottom border-secondary border-opacity-10">
+                        Order Details (Order #{{ order.id }})
+                    </h5>
+                    
+                    <div class="row mb-2">
+                        <div class="col-sm-4 text-secondary">Payment Status:</div>
+                        <div class="col-sm-8 text-success fw-bold"><i class="fa-solid fa-circle-check me-1"></i> {{ order.payment_status }}</div>
+                    </div>
+                    
+                    <div class="row mb-2">
+                        <div class="col-sm-4 text-secondary">Date:</div>
+                        <div class="col-sm-8 text-light">{{ order.order_date|date:"F d, Y H:i" }}</div>
+                    </div>
+                    
+                    <div class="row mb-2">
+                        <div class="col-sm-4 text-secondary">Total Amount Paid:</div>
+                        <div class="col-sm-8 text-gradient fw-bold font-monospace">${{ order.total_amount }}</div>
+                    </div>
+
+                    <hr class="bg-secondary opacity-20">
+
+                    <h6 class="text-light display-font mb-2">Shipping Information</h6>
+                    <p class="text-secondary small mb-1"><strong>Name:</strong> {{ order.shipping_name }}</p>
+                    <p class="text-secondary small mb-1"><strong>Address:</strong> {{ order.shipping_address }}</p>
+                    <p class="text-secondary small mb-0"><strong>Location:</strong> {{ order.shipping_city }}, {{ order.shipping_postal_code }}, {{ order.shipping_country }}</p>
+                </div>
+
+                <!-- stripe checkout test note -->
+                <div class="alert alert-info bg-info bg-opacity-10 border-0 p-3 text-start mb-4">
+                    <div class="d-flex gap-2">
+                        <i class="fa-solid fa-flask text-gradient fs-5 mt-0.5"></i>
+                        <div>
+                            <strong class="text-light d-block mb-1">Stripe Test Mode Verification</strong>
+                            <span class="small text-secondary">This mock transaction was completed using the Stripe test card: <code class="text-info bg-dark px-1.5 py-0.5 rounded font-monospace">4242 4242 4242 4242</code>. The system successfully mapped the callback webhook and deducted items from current warehouse stocks.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{% url 'store:home' %}" class="btn btn-gradient px-4 py-2.5">
+                        <i class="fa-solid fa-house me-2"></i>Return Home
+                    </a>
+                    <a href="{% url 'store:order_history' %}" class="btn btn-outline-glass px-4 py-2.5">
+                        <i class="fa-solid fa-receipt me-2"></i>My Order History
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

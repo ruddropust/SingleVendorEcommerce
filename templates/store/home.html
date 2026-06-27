@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}AuraGlow | Premium Hardware & Devices{% endblock %}
+
+{% block content %}
+<!-- Hero Showcase -->
+<section class="hero-section text-center mb-5 animate-fade-in">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <span class="badge bg-secondary-subtle text-secondary px-3 py-2 rounded-pill mb-3 uppercase tracking-wider small">E-Commerce Experience</span>
+                <h1 class="display-3 mb-3 display-font text-gradient">The Future of Tech is Here</h1>
+                <p class="lead text-secondary mb-4">Discover curated high-performance hardware, smart gadgets, and premium tech products designed for ultimate productivity and comfort.</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="#catalog" class="btn btn-gradient px-4 py-3">Explore Catalog</a>
+                    <a href="{% url 'store:order_history' %}" class="btn btn-outline-glass px-4 py-3">Track Orders</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Catalog Section -->
+<div class="container my-5" id="catalog">
+    <div class="row align-items-center mb-4 g-3">
+        <!-- Category Filter Pills -->
+        <div class="col-md-8">
+            <div class="d-flex flex-wrap align-items-center">
+                <a href="{% url 'store:home' %}#catalog" class="category-btn {% if not selected_category %}active{% endif %}">
+                    All Products
+                </a>
+                {% for category in categories %}
+                    <a href="{% url 'store:home' %}?category={{ category.slug }}#catalog" class="category-btn {% if selected_category.slug == category.slug %}active{% endif %}">
+                        {{ category.name }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Search Input -->
+        <div class="col-md-4">
+            <form action="{% url 'store:home' %}#catalog" method="get" class="input-group">
+                {% if selected_category %}
+                    <input type="hidden" name="category" value="{{ selected_category.slug }}">
+                {% endif %}
+                <input type="text" name="search" class="form-control" placeholder="Search products..." value="{{ search_query }}" id="search-input">
+                <button type="submit" class="btn btn-gradient px-3" id="search-submit">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Product Grid -->
+    <div class="row g-4">
+        {% for product in products %}
+            <div class="col-12 col-md-6 col-lg-4 d-flex align-items-stretch animate-fade-in">
+                <div class="card glass-card w-100 p-3 d-flex flex-column justify-content-between">
+                    <div>
+                        <!-- Product Image -->
+                        <div class="position-relative mb-3 overflow-hidden rounded-3 text-center bg-dark d-flex align-items-center justify-content-center" style="height: 220px; border: 1px solid var(--border-color);">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded-3" style="max-height: 100%; object-fit: contain;">
+                            {% else %}
+                                <div class="text-center text-secondary py-5">
+                                    <i class="fa-solid fa-laptop-code fs-1 text-gradient mb-2"></i>
+                                    <p class="small mb-0 text-muted">Image not available</p>
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Category Badge -->
+                            <span class="position-absolute top-2 start-2 bg-dark bg-opacity-75 text-light px-2.5 py-1 rounded-pill small" style="font-size: 0.75rem; border: 1px solid var(--border-color);">
+                                {{ product.category.name }}
+                            </span>
+                        </div>
+
+                        <!-- Product info -->
+                        <a href="{% url 'store:product_detail' product.slug %}" class="text-decoration-none text-light">
+                            <h4 class="card-title display-font mb-2 text-truncate-2 fs-5" style="min-height: 48px;">{{ product.name }}</h4>
+                        </a>
+                        <p class="card-text text-secondary small text-truncate-3 mb-3" style="min-height: 54px;">{{ product.description|truncatewords:15 }}</p>
+                    </div>
+
+                    <div>
+                        <!-- Price and Stock -->
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="fs-4 fw-bold display-font text-gradient">${{ product.price }}</span>
+                            {% if product.is_in_stock %}
+                                <span class="small text-success bg-success bg-opacity-10 px-2.5 py-1 rounded-pill border border-success border-opacity-10">
+                                    <i class="fa-solid fa-circle-check me-1"></i> In Stock ({{ product.stock }})
+                                </span>
+                            {% else %}
+                                <span class="small text-danger bg-danger bg-opacity-10 px-2.5 py-1 rounded-pill border border-danger border-opacity-10">
+                                    <i class="fa-solid fa-circle-xmark me-1"></i> Out of Stock
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Action Button -->
+                        {% if product.is_in_stock %}
+                            <form action="{% url 'store:cart_add' product.id %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="btn btn-gradient w-100 d-flex align-items-center justify-content-center gap-2 py-2.5 rounded-3" id="add-to-cart-{{ product.id }}">
+                                    <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                                </button>
+                            </form>
+                        {% else %}
+                            <button class="btn btn-outline-glass w-100 py-2.5 rounded-3 border-0 text-muted cursor-not-allowed" disabled id="add-to-cart-disabled-{{ product.id }}">
+                                <i class="fa-solid fa-ban"></i> Temporarily Out of Stock
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12 text-center py-5">
+                <div class="glass-card p-5 max-w-md mx-auto d-inline-block">
+                    <i class="fa-solid fa-magnifying-glass fs-1 text-gradient mb-3"></i>
+                    <h3 class="display-font">No Products Found</h3>
+                    <p class="text-secondary mb-0">We couldn't find any products matching your criteria. Try adjusting your search query or filters.</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
