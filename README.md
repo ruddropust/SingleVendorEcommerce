@@ -133,7 +133,11 @@ This script creates:
 *   Seven premium products (including one out-of-stock item for testing boundaries)
 
 ### 7. Run the Server
-Start Django's local development server:
+Start the local ASGI development server using Uvicorn:
+```bash
+uvicorn ecom_project.asgi:application --reload
+```
+Alternatively, you can run Django's traditional development server:
 ```bash
 python manage.py runserver
 ```
