@@ -146,6 +146,10 @@ Visit the Django admin panel to manage products at: [http://127.0.0.1:8000/admin
 
 ---
 
+## Admin Credential
+username: `admin`
+password: `adminpass123`
+
 ## 💳 Demonstration and Testing Payments
 
 1.  Log in using the seed account (`admin` / `adminpass123`) or create a new user via the **Sign Up** portal.
